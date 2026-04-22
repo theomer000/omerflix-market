@@ -3,89 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>omerFlix Market | Pro Admin</title>
+    <title>omerFlix Market | Hızlı Giriş</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --ana: #a020f0; --gold: #ffd700; --bg: #050505; --card: #111; --text: #fff; --glow: 0 0 20px rgba(160, 32, 240, 0.7); }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
 
-        /* --- YUVARLAK INTRO --- */
-        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 1s; }
-        .intro-circle { width: 220px; height: 220px; border-radius: 50%; border: 4px solid var(--ana); overflow: hidden; box-shadow: var(--glow); animation: pulse 2s infinite alternate; margin-bottom: 20px; }
+        /* --- HIZLI INTRO (1 Saniye) --- */
+        #loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.5s; }
+        .intro-circle { width: 180px; height: 180px; border-radius: 50%; border: 4px solid var(--ana); overflow: hidden; box-shadow: var(--glow); animation: pulse 1s infinite alternate; margin-bottom: 15px; }
         .intro-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .welcome-text { font-size: 20px; color: var(--gold); font-weight: bold; text-shadow: var(--glow); }
+        .welcome-text { font-size: 18px; color: var(--gold); font-weight: bold; }
 
-        header { background: rgba(15,15,15,0.9); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ana); position: sticky; top:0; z-index: 100; }
+        header { background: rgba(15,15,15,0.9); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ana); position: sticky; top:0; z-index: 100; }
         
-        /* --- ADMİN PANEL --- */
         #admin-controls { background: #111; padding: 20px 5%; border-bottom: 2px solid var(--gold); display: none; }
         .admin-grid { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1200px; margin: auto; }
         @media(min-width: 768px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
         .admin-section { background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; }
-        input, select { background: #000; border: 1px solid var(--ana); color: white; padding: 10px; border-radius: 8px; width: 90%; margin-bottom: 10px; }
-        .btn-action { background: var(--ana); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 5px; }
+        input, select { background: #000; border: 1px solid var(--ana); color: white; padding: 10px; border-radius: 8px; width: 92%; margin-bottom: 10px; }
+        .btn-action { background: var(--ana); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* --- MÜZİK PLAYER --- */
-        #music-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
-        #music-panel { background: rgba(20, 20, 20, 0.95); padding: 15px; border-radius: 20px; border: 1px solid var(--ana); box-shadow: var(--glow); width: 220px; margin-bottom: 10px; transition: 0.5s; transform: translateX(350px); opacity: 0; pointer-events: none; }
+        /* --- MÜZİK --- */
+        #music-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
+        #music-panel { background: rgba(20, 20, 20, 0.95); padding: 15px; border-radius: 20px; border: 1px solid var(--ana); width: 200px; margin-bottom: 10px; transition: 0.4s; transform: translateX(300px); opacity: 0; pointer-events: none; }
         #music-panel.active { transform: translateX(0); opacity: 1; pointer-events: all; }
-        .track-item { padding: 10px; font-size: 11px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; background: #1a1a1a; text-align: center; }
-        .track-item.active { background: var(--ana); color: white; }
+        .track-item { padding: 8px; font-size: 11px; cursor: pointer; border-radius: 5px; margin-bottom: 5px; background: #1a1a1a; text-align: center; border: 1px solid transparent; }
+        .track-item.active { border-color: var(--gold); background: var(--ana); }
 
         /* MARKET */
-        .category-header { padding: 20px 5% 0; color: var(--ana); border-bottom: 1px solid #222; margin-top: 20px; }
-        .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
-        .card { background: var(--card); border-radius: 20px; border: 1px solid #222; transition: 0.3s; position: relative; overflow: hidden; text-align: center; }
-        .card:hover { border-color: var(--ana); box-shadow: var(--glow); }
-        .card img { width: 100%; height: 180px; object-fit: contain; padding: 10px; }
-        .edit-badge { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; padding: 3px 8px; border-radius: 5px; font-size: 10px; cursor: pointer; display: none; }
-        .delete-badge { position: absolute; top: 10px; right: 10px; background: #ff4d4d; color: white; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: none; }
+        .category-header { padding: 20px 5% 0; color: var(--ana); margin-top: 10px; }
+        .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border-radius: 15px; border: 1px solid #222; transition: 0.3s; position: relative; overflow: hidden; text-align: center; padding-bottom: 10px; }
+        .card:hover { border-color: var(--ana); }
+        .card img { width: 100%; height: 160px; object-fit: contain; padding: 10px; }
+        .edit-badge { position: absolute; top: 5px; left: 5px; background: var(--gold); color: black; padding: 2px 6px; border-radius: 4px; font-size: 10px; cursor: pointer; display: none; }
+        .delete-badge { position: absolute; top: 5px; right: 5px; background: #ff4d4d; color: white; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; display: none; }
         .admin-active .edit-badge, .admin-active .delete-badge { display: block; }
-        @keyframes pulse { from { transform: scale(0.9); } to { transform: scale(1.1); } }
+        @keyframes pulse { from { opacity: 0.6; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <div class="intro-circle"><img src="35906.png" onerror="this.src='https://via.placeholder.com/200?text=Logo+Yok'"></div>
-        <div class="welcome-text">omerFlix Market'e Hoşgeldin</div>
+        <div class="intro-circle"><img src="35906.png" onerror="this.src='https://via.placeholder.com/200?text=Logo'"></div>
+        <div class="welcome-text">Hoşgeldin Reis</div>
     </div>
 
     <div id="music-container">
         <div id="music-panel">
-            <span style="font-size: 11px; color:var(--gold); display:block; text-align:center; margin-bottom:10px;">omer_Flix Player</span>
-            <div class="track-item" onclick="playYouTube('VuHCasWGDSg', this)">8D Music omer_Flix</div>
-            <div class="track-item" onclick="playYouTube('wGAH8PSk-rg', this)">Aşkım Çok Pardon</div>
-            <div style="text-align:center; margin-top:10px;">
-                <button onclick="stopVideo()" style="background:#ff4d4d; border:none; color:white; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:12px;">STOP</button>
-            </div>
-            <div id="player" style="display:none;"></div>
+            <div class="track-item" onclick="playYT('VuHCasWGDSg', this)">8D Music</div>
+            <div class="track-item" onclick="playYT('wGAH8PSk-rg', this)">Çok Pardon</div>
+            <button onclick="stopYT()" style="width:100%; background:#ff4d4d; border:none; color:white; padding:5px; border-radius:5px; cursor:pointer;">DURDUR</button>
+            <div id="player"></div>
         </div>
-        <button onclick="document.getElementById('music-panel').classList.toggle('active')" style="background:var(--ana); color:white; border:none; width:55px; height:55px; border-radius:50%; cursor:pointer; font-size:20px; box-shadow: var(--glow);"><i class="fa fa-music"></i></button>
+        <button onclick="document.getElementById('music-panel').classList.toggle('active')" style="background:var(--ana); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:20px; box-shadow: var(--glow);"><i class="fa fa-music"></i></button>
     </div>
 
     <header>
-        <div class="logo" style="font-size: 22px; font-weight: 900;">OMER<span>FLIX</span> PRO</div>
-        <button onclick="toggleAdmin()" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:8px 15px; border-radius:8px; cursor:pointer;"><i class="fa fa-cog"></i> Yönetim</button>
+        <div class="logo">OMER<span>FLIX</span></div>
+        <button onclick="toggleAdmin()" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:5px 10px; border-radius:5px; cursor:pointer;">Panel</button>
     </header>
 
     <div id="admin-controls">
         <div class="admin-grid">
             <div class="admin-section">
-                <h3>Kategori Yönetimi</h3>
-                <input type="text" id="cat-name" placeholder="Kategori Adı">
-                <button class="btn-action" onclick="addCategory()">Kategori Ekle</button>
-                <select id="cat-list-delete"></select>
-                <button class="btn-action" style="background:#ff4d4d;" onclick="deleteCategory()">Kategoriyi Sil</button>
+                <input type="text" id="cat-name" placeholder="Yeni Kategori">
+                <button class="btn-action" onclick="addCat()">Ekle</button>
+                <select id="cat-del" style="margin-top:10px;"></select>
+                <button class="btn-action" style="background:#ff4d4d;" onclick="delCat()">Kategori Sil</button>
             </div>
             <div class="admin-section">
-                <h3>Ürün Ekle / Düzenle</h3>
-                <input type="hidden" id="edit-product-id">
+                <input type="hidden" id="edit-id">
                 <input type="text" id="p-name" placeholder="Ürün Adı">
                 <input type="text" id="p-price" placeholder="Fiyat">
-                <input type="text" id="p-img" placeholder="Resim İsmi (Örn: 34726.jpg)">
-                <select id="p-category"></select>
-                <button class="btn-action" style="background:var(--gold); color:black;" id="btn-p-save" onclick="saveProduct()">Ürünü Kaydet</button>
+                <input type="text" id="p-img" placeholder="Resim İsmi (34726.jpg)">
+                <select id="p-cat"></select>
+                <button class="btn-action" style="background:var(--gold); color:black;" id="btn-save" onclick="saveP()">Kaydet</button>
             </div>
         </div>
     </div>
@@ -93,79 +87,64 @@
     <div id="market-space"></div>
 
     <script>
-        let categories = JSON.parse(localStorage.getItem('m_cats')) || ["Hileler"];
-        let products = JSON.parse(localStorage.getItem('m_prods')) || [
-            { id: 1, name: "PUBG VIP Hile", price: "150.00 TL", img: "34726.jpg", cat: "Hileler" }
-        ];
+        let cats = JSON.parse(localStorage.getItem('m_cats')) || ["Hileler"];
+        let prods = JSON.parse(localStorage.getItem('m_prods')) || [{ id: 1, name: "PUBG VIP Hile", price: "150.00 TL", img: "34726.jpg", cat: "Hileler" }];
 
-        // YOUTUBE API
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        var ytPlayer;
-        function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('player', { height: '0', width: '0', videoId: '' }); }
-        function playYouTube(id, el) { 
-            document.querySelectorAll('.track-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active'); ytPlayer.loadVideoById(id); ytPlayer.playVideo(); 
-        }
-        function stopVideo() { ytPlayer.stopVideo(); document.querySelectorAll('.track-item').forEach(i => i.classList.remove('active')); }
+        var yt;
+        function onYouTubeIframeAPIReady() { yt = new YT.Player('player', { height: '0', width: '0', videoId: '' }); }
+        function playYT(id, el) { document.querySelectorAll('.track-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); yt.loadVideoById(id); yt.playVideo(); }
+        function stopYT() { yt.stopVideo(); document.querySelectorAll('.track-item').forEach(i=>i.classList.remove('active')); }
 
-        function renderMarket() {
+        function render() {
             const space = document.getElementById('market-space');
-            const catSelectAdd = document.getElementById('p-category');
-            const catSelectDel = document.getElementById('cat-list-delete');
-            space.innerHTML = ""; catSelectAdd.innerHTML = ""; catSelectDel.innerHTML = "";
+            const selAdd = document.getElementById('p-cat');
+            const selDel = document.getElementById('cat-del');
+            space.innerHTML = ""; selAdd.innerHTML = ""; selDel.innerHTML = "";
 
-            categories.forEach(cat => {
-                catSelectAdd.innerHTML += `<option value="${cat}">${cat}</option>`;
-                catSelectDel.innerHTML += `<option value="${cat}">${cat}</option>`;
-                const catProds = products.filter(p => p.cat === cat);
-                space.innerHTML += `<div class="category-header"><h2>${cat}</h2></div><div class="container" id="cat-${cat}"></div>`;
-                const container = document.getElementById(`cat-${cat}`);
-                catProds.forEach(p => {
-                    container.innerHTML += `
+            cats.forEach(c => {
+                selAdd.innerHTML += `<option value="${c}">${c}</option>`;
+                selDel.innerHTML += `<option value="${c}">${c}</option>`;
+                const items = prods.filter(p => p.cat === c);
+                space.innerHTML += `<div class="category-header"><h3>${c}</h3></div><div class="container" id="c-${c}"></div>`;
+                const box = document.getElementById(`c-${c}`);
+                items.forEach(p => {
+                    box.innerHTML += `
                         <div class="card">
-                            <span class="edit-badge" onclick="editProduct(${p.id})">DÜZENLE</span>
-                            <span class="delete-badge" onclick="deleteProduct(${p.id})">×</span>
-                            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=Resim+Hatalı'">
-                            <h3>${p.name}</h3>
-                            <div style="color:var(--gold); font-weight:bold; margin-bottom:10px;">${p.price}</div>
-                            <button onclick="alert('${p.name} siparişi alındı!')" style="width:90%; padding:10px; border-radius:10px; border:none; background:var(--ana); color:white; font-weight:bold; cursor:pointer; margin-bottom:10px;">Satın Al</button>
+                            <span class="edit-badge" onclick="editP(${p.id})">DÜZENLE</span>
+                            <span class="delete-badge" onclick="delP(${p.id})">×</span>
+                            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=Resim'">
+                            <h4>${p.name}</h4>
+                            <div style="color:var(--gold); font-weight:bold;">${p.price}</div>
+                            <button onclick="alert('Discord\'dan ulaş: theomer')" style="width:80%; padding:8px; background:var(--ana); color:white; border:none; border-radius:8px; margin-top:10px; cursor:pointer;">Satın Al</button>
                         </div>`;
                 });
             });
         }
 
-        // --- DİĞER FONKSİYONLAR (AYNI) ---
-        function addCategory() { const name = document.getElementById('cat-name').value; if(name) { categories.push(name); saveAndRender(); document.getElementById('cat-name').value = ""; } }
-        function deleteCategory() { const name = document.getElementById('cat-list-delete').value; categories = categories.filter(c => c !== name); products = products.filter(p => p.cat !== name); saveAndRender(); }
-        function saveProduct() {
-            const id = document.getElementById('edit-product-id').value;
-            const name = document.getElementById('p-name').value;
-            const price = document.getElementById('p-price').value;
-            const img = document.getElementById('p-img').value;
-            const cat = document.getElementById('p-category').value;
-            if(id) { const index = products.findIndex(p => p.id == id); products[index] = { id: parseInt(id), name, price, img, cat }; } 
-            else { products.push({ id: Date.now(), name, price, img, cat }); }
-            cancelEdit(); saveAndRender();
+        function addCat() { const n = document.getElementById('cat-name').value; if(n){ cats.push(n); sync(); document.getElementById('cat-name').value=""; } }
+        function delCat() { const n = document.getElementById('cat-del').value; cats = cats.filter(c=>c!==n); prods = prods.filter(p=>p.cat!==n); sync(); }
+        function saveP() {
+            const id = document.getElementById('edit-id').value;
+            const n = document.getElementById('p-name').value, pr = document.getElementById('p-price').value, img = document.getElementById('p-img').value, c = document.getElementById('p-cat').value;
+            if(id) { const i = prods.findIndex(p=>p.id==id); prods[i] = {id: parseInt(id), name:n, price:pr, img, cat:c}; }
+            else { prods.push({id: Date.now(), name:n, price:pr, img, cat:c}); }
+            cancel(); sync();
         }
-        function editProduct(id) {
-            const p = products.find(p => p.id == id);
-            document.getElementById('edit-product-id').value = p.id; document.getElementById('p-name').value = p.name;
-            document.getElementById('p-price').value = p.price; document.getElementById('p-img').value = p.img;
-            document.getElementById('p-category').value = p.cat; document.getElementById('btn-p-save').innerText = "Değişiklikleri Kaydet"; window.scrollTo(0,0);
-        }
-        function deleteProduct(id) { products = products.filter(p => p.id != id); saveAndRender(); }
-        function cancelEdit() { document.getElementById('edit-product-id').value = ""; document.getElementById('p-name').value = ""; document.getElementById('p-price').value = ""; document.getElementById('p-img').value = ""; document.getElementById('btn-p-save').innerText = "Ürünü Kaydet"; }
-        function saveAndRender() { localStorage.setItem('m_cats', JSON.stringify(categories)); localStorage.setItem('m_prods', JSON.stringify(products)); renderMarket(); }
+        function editP(id) { const p = prods.find(p=>p.id==id); document.getElementById('edit-id').value=p.id; document.getElementById('p-name').value=p.name; document.getElementById('p-price').value=p.price; document.getElementById('p-img').value=p.img; document.getElementById('p-cat').value=p.cat; document.getElementById('btn-save').innerText="Güncelle"; window.scrollTo(0,0); }
+        function delP(id) { prods = prods.filter(p=>p.id!=id); sync(); }
+        function cancel() { document.getElementById('edit-id').value=""; document.getElementById('p-name').value=""; document.getElementById('p-price').value=""; document.getElementById('p-img').value=""; document.getElementById('btn-save').innerText="Kaydet"; }
+        function sync() { localStorage.setItem('m_cats', JSON.stringify(cats)); localStorage.setItem('m_prods', JSON.stringify(prods)); render(); }
         function toggleAdmin() { const a = document.getElementById('admin-controls'); a.style.display = a.style.display === 'block' ? 'none' : 'block'; document.body.classList.toggle('admin-active'); }
 
         window.onload = () => {
-            renderMarket();
+            render();
             setTimeout(() => {
-                const l = document.getElementById('loading-screen');
-                l.style.opacity = '0';
-                setTimeout(() => l.style.display = 'none', 1000);
-            }, 3000);
+                const s = document.getElementById('loading-screen');
+                s.style.opacity = '0';
+                setTimeout(() => s.style.display = 'none', 500);
+            }, 1000); // 1 Saniye sonra dükkan açılır
         };
     </script>
 </body>
