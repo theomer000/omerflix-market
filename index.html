@@ -3,111 +3,160 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>omerFlix Market | YouTube Player</title>
+    <title>omerFlix | Market & Player</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --ana: #a020f0; --gold: #ffd700; --bg: #050505; --card: #111; --text: #fff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; }
-        
+        * { box-sizing: border-box; transition: 0.3s; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
+
         /* BAN EKRANI */
-        #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: red; color: white; z-index: 100000; justify-content: center; align-items: center; text-align: center; font-weight: 900; font-size: 30px; }
+        #ban-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #900; color: white; z-index: 100000; justify-content: center; align-items: center; text-align: center; font-weight: 900; font-size: 24px; padding: 20px; }
 
-        header { background: rgba(10,10,10,0.9); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ana); position: sticky; top:0; z-index: 1000; }
-        .nav-btn { background: var(--ana); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        header { background: rgba(10,10,10,0.9); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ana); position: sticky; top:0; z-index: 1000; backdrop-filter: blur(10px); }
+        .nav-btn { background: var(--ana); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .gold-btn { background: var(--gold); color: black; }
 
-        /* YOUTUBE PLAYER KUTUSU */
-        #yt-player-box { 
-            position: fixed; bottom: 20px; left: 20px; 
-            background: #000; border: 2px solid var(--ana); 
-            border-radius: 15px; width: 280px; padding: 10px; 
-            z-index: 2000; box-shadow: 0 0 20px var(--ana);
-        }
-        .yt-input-group { display: flex; gap: 5px; margin-bottom: 8px; }
-        #yt-url { background: #111; border: 1px solid #333; color: white; padding: 5px; border-radius: 5px; flex: 1; font-size: 11px; }
-        #player-frame { width: 100%; height: 150px; border-radius: 10px; border: none; }
+        /* PANELLER */
+        #auth-panel, #ilan-panel { display: none; background: var(--card); padding: 20px 5%; border-bottom: 2px solid var(--ana); }
+        input { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; display: block; }
 
+        /* MARKET */
         .market-container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border-radius: 15px; border: 1px solid #333; text-align: center; padding-bottom: 15px; }
+        .card { background: var(--card); border-radius: 15px; border: 1px solid #222; text-align: center; padding-bottom: 15px; position: relative; }
         .card img { width: 100%; height: 120px; object-fit: contain; padding: 10px; }
+        .delete-p { position: absolute; top: 5px; right: 5px; background: red; border: none; color: white; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: none; }
+        .admin-active .delete-p { display: block; }
+
+        /* YOUTUBE PLAYER */
+        #yt-box { position: fixed; bottom: 85px; right: 20px; background: #000; border: 2px solid var(--ana); border-radius: 15px; width: 280px; padding: 12px; z-index: 2000; display: none; box-shadow: 0 0 20px rgba(160, 32, 240, 0.4); }
+        #yt-box iframe { width: 100%; height: 160px; border-radius: 8px; border: none; margin-top: 10px; background: #111; }
+        #toggle-music { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; background: var(--ana); border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; z-index: 2001; }
+
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="ban-screen">YASAKLI KELİME KULLANDIĞIN İÇİN BANLANDIN!<br>ERİŞİMİN ENGELLENDİ.</div>
+<div id="ban-screen">YASAKLI KELİME VEYA DAVRANIŞ!<br>BANLANDIN REİS.</div>
 
 <header>
-    <div style="font-weight: 900; font-size: 20px;">OMER<span>FLIX</span></div>
-    <button class="nav-btn" onclick="togglePlayer()"><i class="fa fa-youtube"></i> Müzik</button>
+    <div style="font-weight:900; font-size:22px;">OMER<span>FLIX</span></div>
+    <div style="display:flex; gap:8px;">
+        <button class="nav-btn" id="auth-btn" onclick="toggleP('auth-panel')">Giriş</button>
+        <button class="nav-btn gold-btn hidden" id="ilan-nav" onclick="toggleP('ilan-panel')">İlan Ver</button>
+        <button class="nav-btn" onclick="openAdmin()"><i class="fa fa-lock"></i></button>
+    </div>
 </header>
+
+<div id="auth-panel">
+    <h3 id="auth-title">Giriş Yap</h3>
+    <input type="email" id="u-email" placeholder="E-posta">
+    <input type="password" id="u-pass" placeholder="Şifre">
+    <button class="nav-btn" style="width:100%;" onclick="handleAuth()">Devam Et</button>
+    <p onclick="switchAuth()" id="auth-switch" style="cursor:pointer; font-size:12px; color:var(--ana); margin-top:10px;">Hesabın yok mu? Kayıt Ol</p>
+</div>
+
+<div id="ilan-panel">
+    <h3>Yeni İlan Ver</h3>
+    <input type="text" id="p-name" placeholder="Ürün Adı">
+    <input type="text" id="p-price" placeholder="Fiyat">
+    <input type="text" id="p-img" placeholder="Resim Adı (35953.jpg)">
+    <button class="nav-btn gold-btn" style="width:100%;" onclick="addProd()">YAYINLA</button>
+</div>
 
 <div class="market-container" id="market-space"></div>
 
-<div id="yt-player-box" style="display: none;">
-    <div style="font-size: 11px; font-weight: bold; color: var(--ana); margin-bottom: 5px;">YouTube Mini Player</div>
-    <div class="yt-input-group">
-        <input type="text" id="yt-url" placeholder="Şarkı adı veya YouTube Linki...">
-        <button class="nav-btn" style="padding: 5px 10px;" onclick="searchMusic()"><i class="fa fa-play"></i></button>
+<div id="yt-box">
+    <div style="display:flex; gap:5px;">
+        <input type="text" id="yt-input" placeholder="Şarkı adı veya Video ID..." style="margin:0; font-size:12px; padding:8px;">
+        <button class="nav-btn" onclick="startMusic()"><i class="fa fa-play"></i></button>
     </div>
-    <iframe id="player-frame" src=""></iframe>
+    <iframe id="yt-frame" src=""></iframe>
 </div>
+<button id="toggle-music" onclick="toggleM()"><i class="fa fa-youtube"></i></button>
 
 <script>
-    // --- OTOMATİK BAN SİSTEMİ ---
-    const yasakliKelimeler = ["küfür1", "küfür2", "saçma1", "mal", "terbiye", "siyaset"]; // Buraya banlanmasını istediğin kelimeleri ekle
-    
-    if(localStorage.getItem('isBanned') === 'true') {
-        document.getElementById('ban-screen').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+    const yasakli = ["küfür1", "saçma", "mal", "siyaset"]; // Ban sebebi kelimeler
+    if(localStorage.getItem('is_banned') === 'true') document.getElementById('ban-screen').style.display='flex';
+
+    let user = JSON.parse(localStorage.getItem('current_u')) || null;
+    let prods = JSON.parse(localStorage.getItem('db_p')) || [{id:1, name:"VALORANT HESAP", price:"200 TL", img:"35953.jpg"}];
+    let mode = 'login';
+
+    function toggleP(id) {
+        const el = document.getElementById(id);
+        const current = el.style.display;
+        document.querySelectorAll('#auth-panel, #ilan-panel').forEach(x => x.style.display='none');
+        el.style.display = current === 'block' ? 'none' : 'block';
     }
 
-    function checkBan(text) {
-        const lowerText = text.toLowerCase();
-        const banla = yasakliKelimeler.some(kelime => lowerText.includes(kelime));
-        if(banla) {
-            localStorage.setItem('isBanned', 'true');
-            location.reload();
-        }
+    function switchAuth() {
+        mode = mode === 'login' ? 'register' : 'login';
+        document.getElementById('auth-title').innerText = mode === 'login' ? 'Giriş Yap' : 'Kayıt Ol';
+        document.getElementById('auth-switch').innerText = mode === 'login' ? 'Hesabın yok mu? Kayıt Ol' : 'Zaten hesabın var mı? Giriş Yap';
     }
 
-    // --- PLAYER SİSTEMİ ---
-    function togglePlayer() {
-        const box = document.getElementById('yt-player-box');
-        box.style.display = box.style.display === 'none' ? 'block' : 'none';
-    }
-
-    function searchMusic() {
-        const input = document.getElementById('yt-url').value;
-        if(!input) return;
-
-        // Önce ban kontrolü yap
-        checkBan(input);
-
-        let videoId = "";
-        if(input.includes("v=")) {
-            videoId = input.split("v=")[1].split("&")[0];
-        } else if(input.includes("youtu.be/")) {
-            videoId = input.split("youtu.be/")[1];
+    function handleAuth() {
+        const e = document.getElementById('u-email').value, p = document.getElementById('u-pass').value;
+        if(!e || !p) return;
+        let users = JSON.parse(localStorage.getItem('all_u')) || [];
+        if(mode === 'register') {
+            users.push({e, p}); localStorage.setItem('all_u', JSON.stringify(users));
+            alert("Kayıt tamam, giriş yap!"); switchAuth();
         } else {
-            // Sadece isim yazdıysa direkt YouTube'da aratır (Daha güvenli embed linki)
-            videoId = "https://www.youtube.com/embed?listType=search&list=" + encodeURIComponent(input);
-            document.getElementById('player-frame').src = videoId;
-            return;
+            const found = users.find(x => x.e === e && x.p === p);
+            if(found) { localStorage.setItem('current_u', JSON.stringify(found)); location.reload(); }
+            else alert("Hata!");
         }
-        
-        document.getElementById('player-frame').src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
     }
 
-    // --- MARKET RENDER ---
-    let prods = JSON.parse(localStorage.getItem('pazar_ilanlar')) || [{id:1, name:"PUBG Mobile UC", price:"250 TL", img:"35953.jpg"}];
+    function addProd() {
+        const n = document.getElementById('p-name').value, pr = document.getElementById('p-price').value, img = document.getElementById('p-img').value || '35953.jpg';
+        if(n && pr) { prods.push({id: Date.now(), name:n, price:pr, img}); localStorage.setItem('db_p', JSON.stringify(prods)); render(); toggleP('ilan-panel'); }
+    }
+
     function render() {
-        const space = document.getElementById('market-space');
-        space.innerHTML = "";
-        prods.forEach(p => {
-            space.innerHTML += `<div class="card"><img src="${p.img}"><h4>${p.name}</h4><div style="color:var(--gold); font-weight:bold;">${p.price}</div></div>`;
+        const s = document.getElementById('market-space'); s.innerHTML = "";
+        prods.forEach(x => {
+            s.innerHTML += `<div class="card"><button class="delete-p" onclick="del(${x.id})">×</button><img src="${x.img}" onerror="this.src='35953.jpg'"><h4>${x.name}</h4><div style="color:var(--gold); font-weight:bold;">${x.price}</div><button class="nav-btn" style="width:85%; margin-top:10px;" onclick="alert('Discord: theomer')">Satın Al</button></div>`;
         });
     }
 
-    window.onload = render;
+    function del(id) { prods = prods.filter(x => x.id !== id); localStorage.setItem('db_p', JSON.stringify(prods)); render(); }
+    function openAdmin() { if(prompt("Pin:") === "1234") document.body.classList.toggle('admin-active'); }
+    function toggleM() { const b = document.getElementById('yt-box'); b.style.display = b.style.display === 'block' ? 'none' : 'block'; }
+
+    function startMusic() {
+        const q = document.getElementById('yt-input').value;
+        if(!q) return;
+        if(yasakli.some(y => q.toLowerCase().includes(y))) { localStorage.setItem('is_banned', 'true'); location.reload(); return; }
+
+        let src = "";
+        // ID Kontrolü (11 karakterli ve boşluksuz ise ID kabul et)
+        if(q.length === 11 && !q.includes(" ")) {
+            src = `https://www.youtube.com/embed/${q}?autoplay=1`;
+        } 
+        // Link Kontrolü
+        else if(q.includes("v=")) {
+            const id = q.split("v=")[1].split("&")[0];
+            src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+        }
+        // İsim Kontrolü (Arama modu)
+        else {
+            src = `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(q)}&autoplay=1`;
+        }
+        document.getElementById('yt-frame').src = src;
+    }
+
+    window.onload = () => {
+        render();
+        if(user) {
+            document.getElementById('auth-btn').innerText = "Çıkış";
+            document.getElementById('auth-btn').onclick = () => { localStorage.removeItem('current_u'); location.reload(); };
+            document.getElementById('ilan-nav').classList.remove('hidden');
+        }
+    };
 </script>
 </body>
 </html>
