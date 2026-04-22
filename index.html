@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>omerFlix Market | Animasyonlu</title>
+    <title>omerFlix Market</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --ana: #a020f0; --gold: #ffd700; --bg: #050505; --card: #111; --text: #fff; --glow: 0 0 20px rgba(160, 32, 240, 0.5); }
@@ -11,7 +11,7 @@
         * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; outline: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
 
-        /* --- SIFIR GECİKME INTRO --- */
+        /* --- INTRO SİSTEMİ --- */
         #loading-screen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: #000; z-index: 99999; display: flex; 
@@ -26,83 +26,82 @@
         .intro-circle img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
         .loaded #loading-screen { opacity: 0; visibility: hidden; transform: scale(1.2); }
 
-        /* --- GİRİŞ ANİMASYONLARI --- */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* --- BANNER --- */
+        .home-banner {
+            width: 100%; height: 25vh; 
+            overflow: hidden; border-bottom: 2px solid var(--ana);
+            animation: fadeIn 0.8s ease-out;
         }
+        .home-banner img { width: 100%; height: 100%; object-fit: cover; }
 
-        .category-header { animation: slideUp 0.6s ease-out forwards; opacity: 0; }
-        .card { animation: slideUp 0.8s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
         header { background: rgba(10,10,10,0.9); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ana); position: sticky; top:0; z-index: 100; backdrop-filter: blur(10px); }
         .logo { font-weight: 900; font-size: 20px; color: #fff; }
         .logo span { color: var(--ana); }
 
-        .admin-toggle-btn { background: linear-gradient(45deg, var(--ana), #6a11cb); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(160, 32, 240, 0.3); }
+        .admin-toggle-btn { background: linear-gradient(45deg, var(--ana), #6a11cb); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 13px; }
 
         #admin-controls { background: #0f0f0f; padding: 15px; border-bottom: 2px solid var(--gold); display: none; }
-        .admin-section { background: #181818; padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #222; }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; width: 92%; margin-bottom: 10px; display: block; }
-        input:focus { border-color: var(--ana); }
-        .btn-action { background: var(--ana); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
+        .admin-section { background: #181818; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; }
+        input, select { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; width: 90%; margin-bottom: 10px; display: block; }
+        .btn-action { background: var(--ana); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
 
-        /* MARKET */
-        .category-header { padding: 25px 5% 5px; color: var(--ana); font-size: 20px; text-transform: uppercase; letter-spacing: 1px; }
-        .container { padding: 15px 5% 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 20px; }
+        /* MARKET ALANI */
+        .category-header { padding: 20px 5% 5px; color: var(--ana); font-size: 18px; text-transform: uppercase; animation: slideUp 0.6s forwards; opacity: 0; }
+        .container { padding: 15px 5% 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         
         .card { 
-            background: linear-gradient(145deg, #111, #0a0a0a); 
-            border-radius: 18px; border: 1px solid #222; 
+            background: #111; border-radius: 15px; border: 1px solid #222; 
             position: relative; overflow: hidden; text-align: center; 
-            padding-bottom: 15px; transition: 0.3s;
+            padding-bottom: 15px; animation: slideUp 0.8s forwards; opacity: 0;
         }
-        .card:hover { border-color: var(--ana); transform: translateY(-5px); box-shadow: var(--glow); }
-        .card img { width: 100%; height: 130px; object-fit: contain; padding: 10px; pointer-events: none; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5)); }
-        
-        .card h4 { margin: 10px 0 5px; font-size: 15px; font-weight: 600; }
-        .price-tag { color: var(--gold); font-size: 16px; font-weight: 800; margin-bottom: 12px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+        .card img { width: 100%; height: 120px; object-fit: contain; padding: 10px; pointer-events: none; }
+        .price-tag { color: var(--gold); font-size: 15px; font-weight: 800; margin-bottom: 10px; }
 
-        .buy-btn { 
-            background: var(--ana); color: white; border: none; 
-            padding: 10px; width: 85%; border-radius: 10px; 
-            font-weight: 800; cursor: pointer; transition: 0.3s;
-            text-transform: uppercase; font-size: 11px;
-        }
-        .buy-btn:active { transform: scale(0.9); }
+        .buy-btn { background: var(--ana); color: white; border: none; padding: 8px; width: 85%; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         /* MÜZİK */
         #music-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-        #music-panel { background: rgba(10, 10, 10, 0.98); padding: 15px; border-radius: 20px; border: 1px solid var(--ana); width: 180px; margin-bottom: 10px; transition: 0.3s; transform: translateY(20px) scale(0.8); opacity: 0; transform-origin: bottom right; pointer-events: none; }
-        #music-panel.active { transform: translateY(0) scale(1); opacity: 1; pointer-events: all; }
-        .track-item { padding: 12px; font-size: 11px; cursor: pointer; border-radius: 10px; margin-bottom: 8px; background: #1a1a1a; text-align: center; border: 1px solid #222; }
-        .track-item.active { background: var(--ana); border-color: var(--gold); box-shadow: var(--glow); }
+        #music-panel { background: rgba(10, 10, 10, 0.98); padding: 12px; border-radius: 15px; border: 1px solid var(--ana); width: 170px; margin-bottom: 10px; transition: 0.3s; transform: scale(0); opacity: 0; transform-origin: bottom right; }
+        #music-panel.active { transform: scale(1); opacity: 1; }
+        .track-item { padding: 10px; font-size: 11px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; background: #1a1a1a; text-align: center; }
+        .track-item.active { background: var(--ana); color: white; }
 
-        .edit-badge, .delete-badge { position: absolute; top: 8px; cursor: pointer; display: none; padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; z-index: 10; }
-        .edit-badge { left: 8px; background: var(--gold); color: #000; }
-        .delete-badge { right: 8px; background: #ff4d4d; color: #fff; }
+        .edit-badge, .delete-badge { position: absolute; top: 5px; cursor: pointer; display: none; padding: 4px 8px; border-radius: 5px; font-size: 10px; z-index: 10; }
+        .edit-badge { left: 5px; background: var(--gold); color: #000; }
+        .delete-badge { right: 5px; background: #ff4d4d; color: #fff; }
         .admin-active .edit-badge, .admin-active .delete-badge { display: block; }
     </style>
 </head>
 <body>
 
-    <div id="loading-screen"><div class="intro-circle"><img src="35906.png"></div></div>
+    <div id="loading-screen">
+        <div class="intro-circle">
+            <img src="logo.png" onerror="this.src='https://via.placeholder.com/150?text=Logo+Yok'">
+        </div>
+    </div>
 
     <header>
         <div class="logo">OMER<span>FLIX</span></div>
-        <button class="admin-toggle-btn" onclick="toggleAdmin()"><i class="fa fa-user-shield"></i> PANEL</button>
+        <button class="admin-toggle-btn" onclick="toggleAdmin()">PANEL</button>
     </header>
+
+    <div class="home-banner">
+        <img src="35955.jpg" onerror="this.src='https://via.placeholder.com/1000x300?text=Banner'">
+    </div>
 
     <div id="admin-controls">
         <div class="admin-section">
-            <input type="text" id="cat-name" placeholder="Yeni Kategori Adı">
-            <button class="btn-action" onclick="addCat()">Kategori Ekle</button>
+            <input type="text" id="cat-name" placeholder="Kategori Adı">
+            <button class="btn-action" onclick="addCat()">Ekle</button>
         </div>
         <div class="admin-section">
             <input type="hidden" id="edit-id">
             <input type="text" id="p-name" placeholder="Ürün Adı">
-            <input type="text" id="p-price" placeholder="Fiyat (Örn: 150 TL)">
-            <input type="text" id="p-img" placeholder="Resim Adı (34726.jpg)">
+            <input type="text" id="p-price" placeholder="Fiyat">
+            <input type="text" id="p-img" placeholder="Resim (35953.jpg)">
             <select id="p-cat"></select>
             <button class="btn-action" style="background:var(--gold); color:black;" id="btn-save" onclick="saveP()">KAYDET</button>
         </div>
@@ -112,19 +111,18 @@
 
     <div id="music-container">
         <div id="music-panel">
-            <div class="track-item" onclick="playYT('VuHCasWGDSg', this)"><i class="fa fa-play"></i> 8D Mix</div>
-            <div class="track-item" onclick="playYT('wGAH8PSk-rg', this)"><i class="fa fa-play"></i> Çok Pardon</div>
-            <button onclick="stopYT()" style="width:100%; background:#ff4d4d; border:none; padding:10px; border-radius:10px; color:white; font-weight:bold; cursor:pointer;">DURDUR</button>
+            <div class="track-item" onclick="playYT('VuHCasWGDSg', this)">8D Music</div>
+            <div class="track-item" onclick="playYT('wGAH8PSk-rg', this)">Çok Pardon</div>
+            <button onclick="stopYT()" style="width:100%; background:#ff4d4d; border:none; padding:8px; border-radius:8px; color:white; font-weight:bold;">DURDUR</button>
             <div id="player"></div>
         </div>
-        <button onclick="document.getElementById('music-panel').classList.toggle('active')" style="background:var(--ana); color:white; border:none; width:55px; height:55px; border-radius:50%; font-size:22px; box-shadow: var(--glow);"><i class="fa fa-music"></i></button>
+        <button onclick="document.getElementById('music-panel').classList.toggle('active')" style="background:var(--ana); color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:20px; box-shadow: var(--glow);"><i class="fa fa-music"></i></button>
     </div>
 
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
-
         let cats = JSON.parse(localStorage.getItem('m_cats')) || ["Hileler"];
-        let prods = JSON.parse(localStorage.getItem('m_prods')) || [{ id: 1, name: "PUBG VIP MOD", price: "150 TL", img: "34726.jpg", cat: "Hileler" }];
+        let prods = JSON.parse(localStorage.getItem('m_prods')) || [{ id: 1, name: "PUBG VIP", price: "150 TL", img: "35953.jpg", cat: "Hileler" }];
 
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
@@ -140,10 +138,10 @@
             cats.forEach((c, idx) => {
                 selAdd.innerHTML += `<option value="${c}">${c}</option>`;
                 const items = prods.filter(p => p.cat === c);
-                space.innerHTML += `<div class="category-header" style="animation-delay: ${idx * 0.1}s"><h3>${c}</h3></div><div class="container" id="c-${c}"></div>`;
+                space.innerHTML += `<div class="category-header" style="animation-delay:${idx*0.1}s"><h3>${c}</h3></div><div class="container" id="c-${c}"></div>`;
                 const box = document.getElementById(`c-${c}`);
                 items.forEach((p, pIdx) => {
-                    box.innerHTML += `<div class="card" style="animation-delay: ${(idx + pIdx) * 0.1 + 0.2}s">
+                    box.innerHTML += `<div class="card" style="animation-delay:${(idx+pIdx)*0.1+0.2}s">
                         <span class="edit-badge" onclick="editP(${p.id})">DÜZENLE</span>
                         <span class="delete-badge" onclick="delP(${p.id})">SİL</span>
                         <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=OmerFlix'">
