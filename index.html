@@ -3,151 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>omerFlix Market</title>
+    <title>omerFlix Pazaryeri</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --ana: #a020f0; --gold: #ffd700; --bg: #050505; --card: #111; --text: #fff; --glow: 0 0 20px rgba(160, 32, 240, 0.5); }
-        * { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; outline: none; }
+        :root { --ana: #a020f0; --gold: #ffd700; --bg: #050505; --card: #111; --text: #fff; --glow: 0 0 15px rgba(160, 32, 240, 0.4); }
+        * { box-sizing: border-box; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; outline: none; }
         body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; }
 
-        /* --- INTRO SİSTEMİ --- */
+        /* --- GARANTİ AÇILIŞ INTRO --- */
         #loading-screen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: #000; z-index: 99999; display: flex; 
-            justify-content: center; align-items: center; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #000; z-index: 99999; display: flex; justify-content: center; align-items: center; 
+            transition: 0.5s;
         }
-        .intro-circle { 
-            width: 140px; height: 140px; border-radius: 50%; 
-            border: 3px solid var(--ana); overflow: hidden; 
-            box-shadow: var(--glow);
-        }
+        .intro-circle { width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--ana); overflow: hidden; box-shadow: var(--glow); }
         .intro-circle img { width: 100%; height: 100%; object-fit: cover; }
-        .loaded #loading-screen { opacity: 0; visibility: hidden; transform: scale(1.2); }
+        .loaded #loading-screen { opacity: 0; visibility: hidden; transform: scale(1.1); }
 
-        /* --- BANNER & HEADER --- */
-        header { background: rgba(10,10,10,0.9); padding: 12px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--ana); position: sticky; top:0; z-index: 100; backdrop-filter: blur(10px); }
-        .logo { font-weight: 900; font-size: 20px; color: #fff; }
+        header { background: rgba(10,10,10,0.95); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ana); position: sticky; top:0; z-index: 100; backdrop-filter: blur(10px); }
+        .logo { font-weight: 900; font-size: 22px; letter-spacing: 1px; }
         .logo span { color: var(--ana); }
-        .home-banner { width: 100%; height: 25vh; overflow: hidden; border-bottom: 2px solid var(--ana); }
-        .home-banner img { width: 100%; height: 100%; object-fit: cover; }
+
+        .btn-group { display: flex; gap: 10px; }
+        .nav-btn { background: var(--ana); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.3s; }
+        .nav-btn.ilan { background: var(--gold); color: #000; }
+
+        /* BANNER */
+        .home-banner { width: 100%; height: 20vh; overflow: hidden; position: relative; }
+        .home-banner img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6); }
+        .banner-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 900; text-align: center; width: 100%; text-shadow: 0 0 10px #000; }
+
+        /* İLAN VERME FORMU */
+        #ilan-formu { display: none; background: #0f0f0f; padding: 20px 5%; border-bottom: 2px solid var(--gold); animation: slideDown 0.4s; }
+        @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+        input, select { background: #1a1a1a; border: 1px solid #333; color: white; padding: 12px; border-radius: 10px; width: 100%; margin-bottom: 10px; display: block; }
+        input:focus { border-color: var(--ana); }
 
         /* MARKET ALANI */
-        .category-header { padding: 20px 5% 5px; color: var(--ana); font-size: 18px; text-transform: uppercase; opacity: 0; transform: translateY(20px); transition: 0.5s; }
-        .container { padding: 15px 5% 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .card { background: #111; border-radius: 15px; border: 1px solid #222; text-align: center; padding-bottom: 15px; opacity: 0; transform: translateY(20px); transition: 0.5s; }
-        .loaded .category-header, .loaded .card { opacity: 1; transform: translateY(0); }
+        .market-container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border-radius: 15px; border: 1px solid #222; text-align: center; padding-bottom: 15px; position: relative; transition: 0.3s; overflow: hidden; }
+        .card:hover { border-color: var(--ana); transform: translateY(-5px); }
         .card img { width: 100%; height: 120px; object-fit: contain; padding: 10px; }
-        .price-tag { color: var(--gold); font-size: 15px; font-weight: 800; margin-bottom: 10px; }
+        .card h4 { margin: 10px 0 5px; font-size: 14px; }
+        .price-tag { color: var(--gold); font-size: 16px; font-weight: bold; margin-bottom: 10px; }
         .buy-btn { background: var(--ana); color: white; border: none; padding: 8px; width: 85%; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* PANEL */
-        .admin-toggle-btn { background: linear-gradient(45deg, var(--ana), #6a11cb); color: white; border: none; padding: 10px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        #admin-controls { background: #0f0f0f; padding: 15px; border-bottom: 2px solid var(--gold); display: none; }
-        .admin-section { background: #181818; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; }
-        input, select { background: #000; border: 1px solid #333; color: white; padding: 10px; border-radius: 8px; width: 90%; margin-bottom: 10px; display: block; }
-        .btn-action { background: var(--ana); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; }
+        /* MİNİ MÜZİK ÇALAR */
+        #mini-player { position: fixed; bottom: 20px; right: 20px; background: #111; border: 1px solid var(--ana); border-radius: 30px; display: flex; align-items: center; padding: 5px 15px; gap: 10px; box-shadow: var(--glow); z-index: 1000; }
+        .play-btn { background: var(--ana); color: white; border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
+        .music-info { font-size: 10px; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* MÜZİK */
-        #music-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
-        #music-panel { background: rgba(10, 10, 10, 0.98); padding: 12px; border-radius: 15px; border: 1px solid var(--ana); width: 170px; margin-bottom: 10px; transition: 0.3s; transform: scale(0); opacity: 0; transform-origin: bottom right; }
-        #music-panel.active { transform: scale(1); opacity: 1; }
-        .track-item { padding: 10px; font-size: 11px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; background: #1a1a1a; text-align: center; }
-        .track-item.active { background: var(--ana); color: white; }
+        .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(255,0,0,0.7); border: none; color: white; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 10px; display: none; }
+        .admin-active .delete-btn { display: block; }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <div class="intro-circle"><img src="logo.png" onerror="this.src='https://via.placeholder.com/150?text=Logo'"></div>
+        <div class="intro-circle"><img src="logo.png" onerror="this.src='35951.jpg'"></div>
     </div>
 
     <header>
         <div class="logo">OMER<span>FLIX</span></div>
-        <button class="admin-toggle-btn" onclick="toggleAdmin()">PANEL</button>
+        <div class="btn-group">
+            <button class="nav-btn ilan" onclick="toggleIlan()"><i class="fa fa-plus"></i> İLAN VER</button>
+            <button class="nav-btn" onclick="toggleAdmin()"><i class="fa fa-lock"></i></button>
+        </div>
     </header>
 
-    <div class="home-banner"><img src="35955.jpg" onerror="this.src='https://via.placeholder.com/1000x300?text=Banner'"></div>
-    <div id="admin-controls">
-        <div class="admin-section">
-            <input type="text" id="cat-name" placeholder="Kategori Adı">
-            <button class="btn-action" onclick="addCat()">Ekle</button>
-        </div>
-        <div class="admin-section">
-            <input type="hidden" id="edit-id">
-            <input type="text" id="p-name" placeholder="Ürün Adı">
-            <input type="text" id="p-price" placeholder="Fiyat">
-            <input type="text" id="p-img" placeholder="Resim (35953.jpg)">
-            <select id="p-cat"></select>
-            <button class="btn-action" style="background:var(--gold); color:black;" id="btn-save" onclick="saveP()">KAYDET</button>
-        </div>
+    <div id="ilan-formu">
+        <h3 style="color:var(--gold); margin-top:0;">Yeni İlan Oluştur</h3>
+        <input type="text" id="p-name" placeholder="Ürün Adı (Örn: Valorant Random Hesap)">
+        <input type="text" id="p-price" placeholder="Fiyat (Örn: 50 TL)">
+        <input type="text" id="p-img" placeholder="Resim Linki veya Dosya Adı">
+        <button class="nav-btn" style="width:100%; padding:15px;" onclick="addIlan()">İLAN YAYINLA</button>
     </div>
 
-    <div id="market-space"></div>
+    <div class="home-banner">
+        <img src="35955.jpg">
+        <div class="banner-text"><h2>GÜVENLİ PAZARYERİNE HOŞ GELDİN</h2></div>
+    </div>
 
-    <div id="music-container">
-        <div id="music-panel">
-            <div class="track-item" onclick="playYT('VuHCasWGDSg', this)">8D Music</div>
-            <div class="track-item" onclick="playYT('wGAH8PSk-rg', this)">Çok Pardon</div>
-            <button onclick="stopYT()" style="width:100%; background:#ff4d4d; border:none; padding:8px; border-radius:8px; color:white; font-weight:bold;">DURDUR</button>
-            <div id="player"></div>
-        </div>
-        <button onclick="document.getElementById('music-panel').classList.toggle('active')" style="background:var(--ana); color:white; border:none; width:50px; height:50px; border-radius:50%; font-size:20px; box-shadow: var(--glow);"><i class="fa fa-music"></i></button>
+    <div class="market-container" id="market-space"></div>
+
+    <div id="mini-player">
+        <button class="play-btn" onclick="toggleMusic()" id="m-btn"><i class="fa fa-play"></i></button>
+        <div class="music-info" id="m-title">8D Music...</div>
+        <audio id="bg-music" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
     </div>
 
     <script>
+        // Sağ Tık Engeli
         document.addEventListener('contextmenu', e => e.preventDefault());
-        let cats = JSON.parse(localStorage.getItem('m_cats')) || ["Hileler"];
-        let prods = JSON.parse(localStorage.getItem('m_prods')) || [{ id: 1, name: "PUBG VIP", price: "150 TL", img: "35953.jpg", cat: "Hileler" }];
 
-        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        var yt;
-        function onYouTubeIframeAPIReady() { yt = new YT.Player('player', { height: '0', width: '0', videoId: '' }); }
-        function playYT(id, el) { document.querySelectorAll('.track-item').forEach(i=>i.classList.remove('active')); el.classList.add('active'); yt.loadVideoById(id); yt.playVideo(); }
-        function stopYT() { yt.stopVideo(); document.querySelectorAll('.track-item').forEach(i=>i.classList.remove('active')); }
+        // Verileri Yükle
+        let prods = JSON.parse(localStorage.getItem('pazar_ilanlar')) || [
+            { id: 1, name: "Örnek İlan", price: "100 TL", img: "35953.jpg" }
+        ];
 
         function render() {
             const space = document.getElementById('market-space');
-            const selAdd = document.getElementById('p-cat');
-            space.innerHTML = ""; selAdd.innerHTML = "";
-            cats.forEach((c, idx) => {
-                selAdd.innerHTML += `<option value="${c}">${c}</option>`;
-                const items = prods.filter(p => p.cat === c);
-                space.innerHTML += `<div class="category-header"><h3>${c}</h3></div><div class="container" id="c-${c}"></div>`;
-                const box = document.getElementById(`c-${c}`);
-                items.forEach((p, pIdx) => {
-                    box.innerHTML += `<div class="card">
-                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=OmerFlix'">
+            space.innerHTML = "";
+            prods.forEach(p => {
+                space.innerHTML += `
+                    <div class="card">
+                        <button class="delete-btn" onclick="delIlan(${p.id})">×</button>
+                        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/150?text=Resim+Yok'">
                         <h4>${p.name}</h4>
                         <div class="price-tag">${p.price}</div>
-                        <button class="buy-btn" onclick="alert('Discord: theomer')">SATIN AL</button>
+                        <button class="buy-btn" onclick="alert('Satıcı Discord: theomer')">SATIN AL</button>
                     </div>`;
-                });
             });
         }
 
-        function addCat() { const n = document.getElementById('cat-name').value; if(n){ cats.push(n); sync(); document.getElementById('cat-name').value=""; } }
-        function saveP() {
-            const id = document.getElementById('edit-id').value;
-            const n = document.getElementById('p-name').value, pr = document.getElementById('p-price').value, img = document.getElementById('p-img').value, c = document.getElementById('p-cat').value;
-            if(id) { const i = prods.findIndex(p=>p.id==id); prods[i] = {id: parseInt(id), name:n, price:pr, img, cat:c}; }
-            else { prods.push({id: Date.now(), name:n, price:pr, img, cat:c}); }
-            cancel(); sync();
+        function toggleIlan() {
+            const f = document.getElementById('ilan-formu');
+            f.style.display = f.style.display === 'block' ? 'none' : 'block';
         }
-        function sync() { localStorage.setItem('m_cats', JSON.stringify(cats)); localStorage.setItem('m_prods', JSON.stringify(prods)); render(); }
-        function toggleAdmin() { const a = document.getElementById('admin-controls'); a.style.display = a.style.display === 'block' ? 'none' : 'block'; document.body.classList.toggle('admin-active'); }
-        function cancel() { document.getElementById('edit-id').value=""; document.getElementById('p-name').value=""; document.getElementById('p-price').value=""; document.getElementById('p-img').value=""; document.getElementById('btn-save').innerText="KAYDET"; }
 
-        // --- ZORUNLU AÇILIŞ TETİKLEYİCİSİ ---
-        function startStore() {
+        function addIlan() {
+            const n = document.getElementById('p-name').value;
+            const p = document.getElementById('p-price').value;
+            const i = document.getElementById('p-img').value;
+
+            if(n && p) {
+                prods.push({ id: Date.now(), name: n, price: p, img: i || '35953.jpg' });
+                localStorage.setItem('pazar_ilanlar', JSON.stringify(prods));
+                render();
+                toggleIlan();
+                alert("İlanın başarıyla eklendi reis!");
+            } else {
+                alert("Lütfen isim ve fiyat kısımlarını doldur.");
+            }
+        }
+
+        function delIlan(id) {
+            if(confirm('İlanı silmek istiyor musun?')) {
+                prods = prods.filter(x => x.id !== id);
+                localStorage.setItem('pazar_ilanlar', JSON.stringify(prods));
+                render();
+            }
+        }
+
+        function toggleAdmin() {
+            document.body.classList.toggle('admin-active');
+            alert("Düzenleme Modu: Artık ilanları silebilirsin.");
+        }
+
+        // Müzik Çalar Sistemi
+        const audio = document.getElementById('bg-music');
+        const mBtn = document.getElementById('m-btn');
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                mBtn.innerHTML = '<i class="fa fa-pause"></i>';
+            } else {
+                audio.pause();
+                mBtn.innerHTML = '<i class="fa fa-play"></i>';
+            }
+        }
+
+        // Başlatma
+        window.onload = () => {
             render();
-            document.body.classList.add('loaded');
-        }
-
-        // Sayfa tam yüklense de yüklenmese de 1 saniye sonra dükkanı aç
-        window.onload = startStore;
-        setTimeout(startStore, 1000); 
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 800);
+        };
     </script>
 </body>
 </html>
