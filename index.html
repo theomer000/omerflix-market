@@ -17,15 +17,22 @@
 
         header { background: rgba(15,15,15,0.9); padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ana); position: sticky; top:0; z-index: 100; }
         
-        /* --- ADMIN PANEL (GELİŞMİŞ) --- */
+        /* --- ADMİN PANEL --- */
         #admin-controls { background: #111; padding: 20px 5%; border-bottom: 2px solid var(--gold); display: none; }
-        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: auto; }
+        .admin-grid { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 1200px; margin: auto; }
+        @media(min-width: 768px) { .admin-grid { grid-template-columns: 1fr 1fr; } }
         .admin-section { background: #1a1a1a; padding: 15px; border-radius: 15px; border: 1px solid #333; }
         input, select { background: #000; border: 1px solid var(--ana); color: white; padding: 10px; border-radius: 8px; width: 90%; margin-bottom: 10px; }
         .btn-action { background: var(--ana); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-bottom: 5px; }
-        .btn-gold { background: var(--gold); color: black; }
 
-        /* MARKET ALANI */
+        /* --- MÜZİK PLAYER --- */
+        #music-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
+        #music-panel { background: rgba(20, 20, 20, 0.95); padding: 15px; border-radius: 20px; border: 1px solid var(--ana); box-shadow: var(--glow); width: 220px; margin-bottom: 10px; transition: 0.5s; transform: translateX(350px); opacity: 0; pointer-events: none; }
+        #music-panel.active { transform: translateX(0); opacity: 1; pointer-events: all; }
+        .track-item { padding: 10px; font-size: 11px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; background: #1a1a1a; text-align: center; }
+        .track-item.active { background: var(--ana); color: white; }
+
+        /* MARKET */
         .category-header { padding: 20px 5% 0; color: var(--ana); border-bottom: 1px solid #222; margin-top: 20px; }
         .container { padding: 20px 5%; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
         .card { background: var(--card); border-radius: 20px; border: 1px solid #222; transition: 0.3s; position: relative; overflow: hidden; text-align: center; }
@@ -34,13 +41,27 @@
         .edit-badge { position: absolute; top: 10px; left: 10px; background: var(--gold); color: black; padding: 3px 8px; border-radius: 5px; font-size: 10px; cursor: pointer; display: none; }
         .delete-badge { position: absolute; top: 10px; right: 10px; background: #ff4d4d; color: white; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; display: none; }
         .admin-active .edit-badge, .admin-active .delete-badge { display: block; }
+        @keyframes pulse { from { transform: scale(0.9); } to { transform: scale(1.1); } }
     </style>
 </head>
 <body>
 
     <div id="loading-screen">
-        <div class="intro-circle"><img src="resimler/logo.png"></div>
+        <div class="intro-circle"><img src="35906.png" onerror="this.src='https://via.placeholder.com/200?text=Logo+Yok'"></div>
         <div class="welcome-text">omerFlix Market'e Hoşgeldin</div>
+    </div>
+
+    <div id="music-container">
+        <div id="music-panel">
+            <span style="font-size: 11px; color:var(--gold); display:block; text-align:center; margin-bottom:10px;">omer_Flix Player</span>
+            <div class="track-item" onclick="playYouTube('VuHCasWGDSg', this)">8D Music omer_Flix</div>
+            <div class="track-item" onclick="playYouTube('wGAH8PSk-rg', this)">Aşkım Çok Pardon</div>
+            <div style="text-align:center; margin-top:10px;">
+                <button onclick="stopVideo()" style="background:#ff4d4d; border:none; color:white; padding:8px 15px; border-radius:8px; cursor:pointer; font-size:12px;">STOP</button>
+            </div>
+            <div id="player" style="display:none;"></div>
+        </div>
+        <button onclick="document.getElementById('music-panel').classList.toggle('active')" style="background:var(--ana); color:white; border:none; width:55px; height:55px; border-radius:50%; cursor:pointer; font-size:20px; box-shadow: var(--glow);"><i class="fa fa-music"></i></button>
     </div>
 
     <header>
@@ -54,7 +75,7 @@
                 <h3>Kategori Yönetimi</h3>
                 <input type="text" id="cat-name" placeholder="Kategori Adı">
                 <button class="btn-action" onclick="addCategory()">Kategori Ekle</button>
-                <select id="cat-list-delete" style="width: 100%;"></select>
+                <select id="cat-list-delete"></select>
                 <button class="btn-action" style="background:#ff4d4d;" onclick="deleteCategory()">Kategoriyi Sil</button>
             </div>
             <div class="admin-section">
@@ -62,9 +83,9 @@
                 <input type="hidden" id="edit-product-id">
                 <input type="text" id="p-name" placeholder="Ürün Adı">
                 <input type="text" id="p-price" placeholder="Fiyat">
-                <input type="text" id="p-img" placeholder="Resim Yolu (resimler/...)">
-                <select id="p-category" style="width: 100%;"></select>
-                <button class="btn-action btn-gold" id="btn-p-save" onclick="saveProduct()">Ürünü Kaydet</button>
+                <input type="text" id="p-img" placeholder="Resim İsmi (Örn: 34726.jpg)">
+                <select id="p-category"></select>
+                <button class="btn-action" style="background:var(--gold); color:black;" id="btn-p-save" onclick="saveProduct()">Ürünü Kaydet</button>
             </div>
         </div>
     </div>
@@ -72,115 +93,80 @@
     <div id="market-space"></div>
 
     <script>
-        let categories = JSON.parse(localStorage.getItem('m_cats')) || ["Hileler", "Hesaplar"];
+        let categories = JSON.parse(localStorage.getItem('m_cats')) || ["Hileler"];
         let products = JSON.parse(localStorage.getItem('m_prods')) || [
-            { id: 1, name: "PUBG VIP Hile", price: "150.00 TL", img: "resimler/pubg_hile.png", cat: "Hileler" }
+            { id: 1, name: "PUBG VIP Hile", price: "150.00 TL", img: "34726.jpg", cat: "Hileler" }
         ];
+
+        // YOUTUBE API
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0]; firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var ytPlayer;
+        function onYouTubeIframeAPIReady() { ytPlayer = new YT.Player('player', { height: '0', width: '0', videoId: '' }); }
+        function playYouTube(id, el) { 
+            document.querySelectorAll('.track-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active'); ytPlayer.loadVideoById(id); ytPlayer.playVideo(); 
+        }
+        function stopVideo() { ytPlayer.stopVideo(); document.querySelectorAll('.track-item').forEach(i => i.classList.remove('active')); }
 
         function renderMarket() {
             const space = document.getElementById('market-space');
             const catSelectAdd = document.getElementById('p-category');
             const catSelectDel = document.getElementById('cat-list-delete');
-            
-            space.innerHTML = "";
-            catSelectAdd.innerHTML = "";
-            catSelectDel.innerHTML = "";
+            space.innerHTML = ""; catSelectAdd.innerHTML = ""; catSelectDel.innerHTML = "";
 
             categories.forEach(cat => {
-                // Select listelerini doldur
                 catSelectAdd.innerHTML += `<option value="${cat}">${cat}</option>`;
                 catSelectDel.innerHTML += `<option value="${cat}">${cat}</option>`;
-
-                // Market kategorilerini oluştur
                 const catProds = products.filter(p => p.cat === cat);
                 space.innerHTML += `<div class="category-header"><h2>${cat}</h2></div><div class="container" id="cat-${cat}"></div>`;
-                
                 const container = document.getElementById(`cat-${cat}`);
                 catProds.forEach(p => {
                     container.innerHTML += `
                         <div class="card">
                             <span class="edit-badge" onclick="editProduct(${p.id})">DÜZENLE</span>
                             <span class="delete-badge" onclick="deleteProduct(${p.id})">×</span>
-                            <img src="${p.img}">
+                            <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=Resim+Hatalı'">
                             <h3>${p.name}</h3>
                             <div style="color:var(--gold); font-weight:bold; margin-bottom:10px;">${p.price}</div>
-                            <button style="width:90%; padding:10px; border-radius:10px; border:none; background:var(--ana); color:white; font-weight:bold; cursor:pointer; margin-bottom:10px;">Satın Al</button>
+                            <button onclick="alert('${p.name} siparişi alındı!')" style="width:90%; padding:10px; border-radius:10px; border:none; background:var(--ana); color:white; font-weight:bold; cursor:pointer; margin-bottom:10px;">Satın Al</button>
                         </div>`;
                 });
             });
         }
 
-        // Kategori İşlemleri
-        function addCategory() {
-            const name = document.getElementById('cat-name').value;
-            if(name) { categories.push(name); saveAndRender(); document.getElementById('cat-name').value = ""; }
-        }
-        function deleteCategory() {
-            const name = document.getElementById('cat-list-delete').value;
-            categories = categories.filter(c => c !== name);
-            products = products.filter(p => p.cat !== name);
-            saveAndRender();
-        }
-
-        // Ürün İşlemleri
+        // --- DİĞER FONKSİYONLAR (AYNI) ---
+        function addCategory() { const name = document.getElementById('cat-name').value; if(name) { categories.push(name); saveAndRender(); document.getElementById('cat-name').value = ""; } }
+        function deleteCategory() { const name = document.getElementById('cat-list-delete').value; categories = categories.filter(c => c !== name); products = products.filter(p => p.cat !== name); saveAndRender(); }
         function saveProduct() {
             const id = document.getElementById('edit-product-id').value;
             const name = document.getElementById('p-name').value;
             const price = document.getElementById('p-price').value;
             const img = document.getElementById('p-img').value;
             const cat = document.getElementById('p-category').value;
-
-            if(id) {
-                const index = products.findIndex(p => p.id == id);
-                products[index] = { id: parseInt(id), name, price, img, cat };
-            } else {
-                products.push({ id: Date.now(), name, price, img, cat });
-            }
-            cancelEdit();
-            saveAndRender();
+            if(id) { const index = products.findIndex(p => p.id == id); products[index] = { id: parseInt(id), name, price, img, cat }; } 
+            else { products.push({ id: Date.now(), name, price, img, cat }); }
+            cancelEdit(); saveAndRender();
         }
-
         function editProduct(id) {
             const p = products.find(p => p.id == id);
-            document.getElementById('edit-product-id').value = p.id;
-            document.getElementById('p-name').value = p.name;
-            document.getElementById('p-price').value = p.price;
-            document.getElementById('p-img').value = p.img;
-            document.getElementById('p-category').value = p.cat;
-            document.getElementById('btn-p-save').innerText = "Değişiklikleri Kaydet";
-            window.scrollTo(0,0);
+            document.getElementById('edit-product-id').value = p.id; document.getElementById('p-name').value = p.name;
+            document.getElementById('p-price').value = p.price; document.getElementById('p-img').value = p.img;
+            document.getElementById('p-category').value = p.cat; document.getElementById('btn-p-save').innerText = "Değişiklikleri Kaydet"; window.scrollTo(0,0);
         }
-
-        function deleteProduct(id) {
-            products = products.filter(p => p.id != id);
-            saveAndRender();
-        }
-
-        function cancelEdit() {
-            document.getElementById('edit-product-id').value = "";
-            document.getElementById('p-name').value = "";
-            document.getElementById('p-price').value = "";
-            document.getElementById('p-img').value = "";
-            document.getElementById('btn-p-save').innerText = "Ürünü Kaydet";
-        }
-
-        function saveAndRender() {
-            localStorage.setItem('m_cats', JSON.stringify(categories));
-            localStorage.setItem('m_prods', JSON.stringify(products));
-            renderMarket();
-        }
-
-        function toggleAdmin() {
-            const a = document.getElementById('admin-controls');
-            a.style.display = a.style.display === 'block' ? 'none' : 'block';
-            document.body.classList.toggle('admin-active');
-        }
+        function deleteProduct(id) { products = products.filter(p => p.id != id); saveAndRender(); }
+        function cancelEdit() { document.getElementById('edit-product-id').value = ""; document.getElementById('p-name').value = ""; document.getElementById('p-price').value = ""; document.getElementById('p-img').value = ""; document.getElementById('btn-p-save').innerText = "Ürünü Kaydet"; }
+        function saveAndRender() { localStorage.setItem('m_cats', JSON.stringify(categories)); localStorage.setItem('m_prods', JSON.stringify(products)); renderMarket(); }
+        function toggleAdmin() { const a = document.getElementById('admin-controls'); a.style.display = a.style.display === 'block' ? 'none' : 'block'; document.body.classList.toggle('admin-active'); }
 
         window.onload = () => {
             renderMarket();
-            setTimeout(() => { document.getElementById('loading-screen').style.opacity='0'; setTimeout(()=>document.getElementById('loading-screen').style.display='none',1000); }, 3000);
+            setTimeout(() => {
+                const l = document.getElementById('loading-screen');
+                l.style.opacity = '0';
+                setTimeout(() => l.style.display = 'none', 1000);
+            }, 3000);
         };
     </script>
 </body>
 </html>
-
